@@ -1,0 +1,35 @@
+name: seal-build
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '14.15.1'
+
+      - name: Pin the npm registry to the release-date time machine
+        run: |
+          npm config set registry https://time-machines-npm.sealsecurity.io/
+          npm config set //time-machines-npm.sealsecurity.io/:_authToken 2020-12-07
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the browser bundles
+        run: make browserify
+
+      - name: Pack the npm tarball
+        run: npm pack
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-tarball
+          path: js-yaml-*.tgz
+          if-no-files-found: error

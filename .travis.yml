@@ -1,2 +1,5 @@
 language: node_js
+# Pin the image: the default dist ships glibc < 2.28, which the `node` (latest)
+# alias installed below cannot run.
+dist: focal
 node_js: node
